@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const tools = [
-  { name: "AI Chat Assistant", icon: MessageSquare, href: "/dashboard/chat" },
+  { name: "Swai Chat", icon: MessageSquare, href: "/dashboard/chat" },
   { name: "Resume Maker", icon: FileText, href: "/dashboard/resume" },
   { name: "Caption Generator", icon: Share2, href: "/dashboard/caption" },
   { name: "Bio Maker", icon: PenTool, href: "/dashboard/bio" },
@@ -44,7 +44,7 @@ export function Sidebar() {
           <div className="bg-primary/20 p-1.5 rounded-lg border border-primary/50">
             <Sparkles className="w-5 h-5 text-primary" />
           </div>
-          <span className="font-bold text-lg tracking-tight text-white">DailyAI</span>
+            <span className="font-bold text-lg tracking-tight">Swai</span>
         </Link>
         <button onClick={() => setIsOpen(true)} className="p-2 text-gray-300 hover:text-white">
           <Menu className="w-6 h-6" />
@@ -76,7 +76,7 @@ export function Sidebar() {
             <div className="bg-primary/20 p-1.5 rounded-lg border border-primary/50">
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
-            <span className="font-bold text-lg tracking-tight">DailyAI</span>
+            <span className="font-bold text-lg tracking-tight">Swai</span>
           </Link>
         </div>
 

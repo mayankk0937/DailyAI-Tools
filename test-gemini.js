@@ -1,7 +1,11 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const fs = require('fs');
 const env = fs.readFileSync('.env.local', 'utf-8');
-const key = env.split('\n').find(line => line.startsWith('GEMINI_API_KEY=')).split('=')[1].trim();
+const key = env.split('\n').find(line => line.startsWith('GEMINI_API_KEY='))?.split('=')[1]?.trim();
+if (!key) {
+  console.error('GEMINI_API_KEY is missing in .env.local');
+  process.exit(1);
+}
 const ai = new GoogleGenerativeAI(key);
 
 async function test() {

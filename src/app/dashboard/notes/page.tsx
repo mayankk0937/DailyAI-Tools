@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ToolTemplate } from "@/components/ui/ToolTemplate";
-import { FileText, Copy, AlertCircle } from "lucide-react";
+import { FileText, Copy, AlertCircle, RefreshCw, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 
@@ -12,6 +12,7 @@ export default function NotesGenerator() {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ text: "" });
+  const [provider, setProvider] = useState<string | null>(null);
 
   const tabNames = [
     "Smart Notes", 
@@ -29,9 +30,12 @@ export default function NotesGenerator() {
       return;
     }
 
+    if (isGenerating) return; // Prevent multiple clicks
+
     setIsGenerating(true);
     setError(null);
     setSections([]);
+    setProvider(null);
 
     try {
       const response = await fetch("/api/generate", {
@@ -44,11 +48,17 @@ export default function NotesGenerator() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to generate notes");
+      if (!response.ok) throw new Error(data.error || data.message || "Failed to generate notes");
 
       // Parse the 7 sections
       const parsedSections = data.result.split("---SECTION_BREAK---").map((s: string) => s.trim()).filter(Boolean);
+      
+      if (parsedSections.length === 0) {
+         throw new Error("No notes were generated. Please try again.");
+      }
+
       setSections(parsedSections);
+      setProvider(data.provider);
       setActiveTab(0);
     } catch (err: any) {
       setError(err.message);
@@ -64,6 +74,8 @@ export default function NotesGenerator() {
       icon={FileText}
       isGenerating={isGenerating}
       onGenerate={handleGenerate}
+      hideGenerateButton={true}
+      provider={provider || undefined}
       result={
         sections.length > 0 ? (
           <div className="flex flex-col h-full">
@@ -92,14 +104,22 @@ export default function NotesGenerator() {
             </div>
 
             {/* Action Bar */}
-            <div className="pt-4 mt-4 border-t border-white/5">
+            <div className="pt-4 mt-4 border-t border-white/5 flex gap-2">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full" 
+                className="flex-1" 
                 onClick={() => navigator.clipboard.writeText(sections[activeTab])}
               >
                 <Copy className="w-4 h-4 mr-2" /> Copy This Section
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleGenerate}
+                disabled={isGenerating}
+              >
+                <RefreshCw className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`} />
               </Button>
             </div>
           </div>
@@ -107,8 +127,13 @@ export default function NotesGenerator() {
       }
     >
       {error && (
-        <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" /> {error}
+        <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-3 rounded-xl text-sm flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" /> {error}
+          </div>
+          <Button size="sm" variant="ghost" className="h-7 px-2 hover:bg-red-500/20" onClick={handleGenerate}>
+            Retry
+          </Button>
         </div>
       )}
 
@@ -121,6 +146,23 @@ export default function NotesGenerator() {
           placeholder="Paste your long text here to get elite, exam-ready notes..."
         />
       </div>
+
+      <Button 
+        variant="premium" 
+        className="w-full h-12 mt-4" 
+        onClick={handleGenerate}
+        disabled={isGenerating || !formData.text}
+      >
+        {isGenerating ? (
+          <span className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 animate-spin" /> Routing to best AI...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" /> Generate Elite Notes
+          </span>
+        )}
+      </Button>
     </ToolTemplate>
   );
 }

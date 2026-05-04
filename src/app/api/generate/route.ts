@@ -1,22 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { YoutubeTranscript } from "youtube-transcript";
+import { aiRouter } from "@/lib/ai/aiRouter";
 
-// Initialize AI Clients
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-const groq = new OpenAI({ 
-  apiKey: process.env.GROQ_API_KEY || "", 
-  baseURL: "https://api.groq.com/openai/v1" 
-});
-const openrouter = new OpenAI({ 
-  apiKey: process.env.OPENROUTER_API_KEY || "", 
-  baseURL: "https://openrouter.ai/api/v1" 
-});
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || "" 
-});
+// Auth & Credit Check - REMOVED (Project is now 100% Public)
 
 // Simple In-Memory Cache (Reset on server restart, good for MVP)
 const promptCache = new Map<string, string>();
@@ -76,7 +63,33 @@ CRITICAL RULES:
       case "pdf_summary":
         basePrompt = `Summarize this document. Type: ${data.type}. Focus: ${data.focus || "General Summary"}. Provide key takeaways and action items. Content: ${data.text || "Document attached."}`;
         break;
-      case "caption": basePrompt = `3 Viral Captions for ${data.platform}. Topic: ${data.topic}. Mood: ${data.mood}.`; break;
+      case "caption": 
+        basePrompt = `You are a World-Class Viral Content Strategist. Create PREMIUM, VIRAL Instagram/Social Media captions for the topic: "${data.topic}".
+        
+        SELECTED STYLE: ${data.mood}
+        PLATFORM: ${data.platform}
+        
+        CRITICAL RULES:
+        - STYLE ADAPTATION: 
+          - Minimal: Very short, no emojis, deep impact.
+          - Gen Z: Lowercase, slang (lowkey, era, main character), aesthetic vibe.
+          - Sigma/Attitude: Confident, mysterious, high-status tone.
+          - Funny: Indian meme style, witty, relatable.
+          - Luxury: Elegant, high-class, quiet luxury vibe.
+        - INDIAN AUDIENCE: Use natural Hinglish (Hindi + English mix) where requested. No robotic Hindi.
+        - HOOK: The first line must be a scroll-stopper.
+        
+        CRITICAL: Your output MUST be divided into these EXACT 6 sections, separated by the delimiter "---SECTION_BREAK---".
+        
+        1. 10 SHORT CAPTIONS: Punchy, modern, viral-ready.
+        2. 5 PREMIUM CAPTIONS: Deep, storytelling, or high-aesthetic.
+        3. 5 ONE-LINER PUNCHES: Single line, maximum impact.
+        4. 5 HINGLISH CAPTIONS: Natural Indian Gen-Z mix.
+        5. VIRAL HASHTAGS: 15-20 trending and niche hashtags.
+        6. EMOJI-ONLY / MINIMALIST VERSION: A set of emojis or ultra-minimal text that captures the vibe.
+        
+        Formatting: Use "---SECTION_BREAK---" to separate the 6 sections. No conversational filler.`; 
+        break;
       case "bio": basePrompt = `3 Standout Bios for ${data.platform}. About: ${data.about}. NO INTRO/OUTRO.`; break;
       case "study": {
         const subjectsSummary = data.subjects.map((s: any) => `${s.name} (${s.chapters} chapters)`).join(", ");
@@ -292,7 +305,7 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
           ]
         }`;
         break;
-      case "chat": basePrompt = `You are DAX, a premium, smart, fast, and slightly witty AI companion for the Daily AI app. Your personality is motivational, friendly, and highly capable. Always respond concisely with a professional startup-level feel. Assist the user with their request: ${data.message}`; break;
+      case "chat": basePrompt = `You are Swai, a premium, smart, fast, and slightly witty AI companion for the Swai app. Your personality is motivational, friendly, and highly capable. Always respond concisely with a professional startup-level feel. Assist the user with their request: ${data.message}`; break;
       default: basePrompt = `Assist with: ${JSON.stringify(data)}`;
     }
 
@@ -340,6 +353,8 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
         provider: "Gemini", 
         model: "gemini-1.5-flash", 
         call: async (p: string) => {
+          const genAI = getGeminiClient();
+          if (!genAI) throw new Error("GEMINI_API_KEY missing");
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
           if (data.fileData && data.mimeType) {
             return model.generateContent([p, { inlineData: { data: data.fileData, mimeType: data.mimeType } }]);
@@ -387,6 +402,8 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
         provider: "Gemini Pro", 
         model: "gemini-1.5-pro", 
         call: async (p: string) => {
+          const genAI = getGeminiClient();
+          if (!genAI) throw new Error("GEMINI_API_KEY missing");
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
           if (data.fileData && data.mimeType) {
             return model.generateContent([p, { inlineData: { data: data.fileData, mimeType: data.mimeType } }]);
@@ -401,30 +418,14 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
     let resultText = "";
     let usedProvider = "";
 
-    for (const step of strategy) {
-      try {
-        console.log(`Attempting generation with ${step.provider}...`);
-        const response: any = await step.call(finalPrompt);
-        
-        if (step.provider === "Gemini" || step.provider === "Gemini Pro") {
-          resultText = response.response.text();
-        } else {
-          resultText = response.choices[0].message.content;
-        }
-        
-        if (resultText) {
-          usedProvider = step.provider;
-          break;
-        }
-      } catch (e: any) {
-        console.warn(`${step.provider} failed:`, e.message);
-        lastError = e.message;
-        continue; // Fallback to next
-      }
-    }
-
-    if (!resultText) {
-      throw new Error(`All AI providers failed. Last error: ${lastError}`);
+    // Using the new centralized AI Router
+    const routerResult = await aiRouter(finalPrompt);
+    
+    if (routerResult.success) {
+      resultText = routerResult.output || "";
+      usedProvider = routerResult.provider || "Unknown";
+    } else {
+      throw new Error(routerResult.message);
     }
 
     // 6. Post-Processing & Database

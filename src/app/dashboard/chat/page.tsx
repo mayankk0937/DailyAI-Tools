@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { saveHistory } from "@/lib/history";
 
-export default function AIChatAssistant() {
+export default function SwaiChat() {
   const [messages, setMessages] = useState<{ role: "user" | "ai"; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -43,7 +43,7 @@ export default function AIChatAssistant() {
       setMessages((prev) => [...prev, { role: "ai", content: data.result }]);
       
       saveHistory({
-        tool: "AI Chat Assistant",
+        tool: "Swai Chat",
         title: text.length > 30 ? text.substring(0, 30) + "..." : text,
         href: "/dashboard/chat"
       });
@@ -62,10 +62,8 @@ export default function AIChatAssistant() {
           <Zap className="w-6 h-6 relative z-10" />
         </div>
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-2">
-            DAX <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] uppercase tracking-widest font-bold border border-primary/30">AI</span>
-          </h1>
-          <p className="text-primary/80 font-medium text-sm">Your Smart Daily AI Companion</p>
+            Swai <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] uppercase tracking-widest font-bold border border-primary/30">Assistant</span>
+          <p className="text-primary/80 font-medium text-sm">Your Smart Daily Companion, Swai</p>
         </div>
       </div>
 
@@ -80,7 +78,7 @@ export default function AIChatAssistant() {
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(168,85,247,0.3)] border border-primary/20">
               <Bot className="w-10 h-10 text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Hey, I'm DAX ⚡</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Hey, I'm Swai ⚡</h2>
             <p className="text-gray-400 max-w-md">
               Ready to organize your day, boost focus, and solve anything. Try "Make me a schedule" or ask me a complex question!
             </p>
@@ -127,7 +125,7 @@ export default function AIChatAssistant() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Ask DAX anything..."
+          placeholder="Ask Swai anything..."
           className="flex-1 bg-transparent border-none focus:ring-0 text-white px-4 py-2 placeholder:text-gray-500 font-medium"
         />
         <Button variant="premium" onClick={handleSend} disabled={isGenerating} className="rounded-xl px-6 shadow-[0_0_15px_rgba(168,85,247,0.4)]">

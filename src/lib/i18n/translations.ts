@@ -14,12 +14,12 @@ export const translations = {
     hero: {
       tagline: "One Website. Unlimited Daily Tools.",
       subtagline: "Resume, Captions, Notes, Summaries, OCR, Planners, YouTube Notes & more. The ultimate AI toolkit for students, creators, and professionals.",
-      cta: "Try Daily AI Now",
+      cta: "Try Swai Now",
       explore: "Explore Tools",
     },
     features: {
       title: "Everything you need, in one place.",
-      subtitle: "Why pay for multiple AI subscriptions when you can have it all in one premium workspace?",
+      subtitle: "Why pay for multiple AI subscriptions when you can have Swai?",
       resume: "Resume Maker",
       resumeDesc: "AI-generated professional resumes",
       caption: "Caption Generator",
@@ -35,11 +35,11 @@ export const translations = {
     },
     testimonials: {
       title: "Trusted by students, creators, and professionals.",
-      subtitle: "See how DailyAI is helping people save hours every single day.",
+      subtitle: "See how Swai is helping people save hours every single day.",
     },
     faq: {
       title: "Frequently Asked Questions",
-      subtitle: "Everything you need to know about DailyAI.",
+      subtitle: "Everything you need to know about Swai.",
       q1: "Is DailyAI really free to use?",
       a1: "Yes! DailyAI is completely free for everyone to explore. You can start using all our tools immediately without any hidden fees.",
       q2: "Which AI models power the tools?",
@@ -99,11 +99,11 @@ export const translations = {
     },
     testimonials: {
       title: "छात्रों, क्रिएटर्स और प्रोफेशनल्स द्वारा भरोसेमंद।",
-      subtitle: "देखें कि कैसे DailyAI लोगों को हर दिन घंटों बचाने में मदद कर रहा है।",
+      subtitle: "देखें कि कैसे Swai लोगों को हर दिन घंटों बचाने में मदद कर रहा है।",
     },
     faq: {
       title: "अक्सर पूछे जाने वाले प्रश्न",
-      subtitle: "DailyAI के बारे में वह सब कुछ जो आपको जानना चाहिए।",
+      subtitle: "Swai के बारे में वह सब कुछ जो आपको जानना चाहिए।",
       q1: "क्या DailyAI वाकई में फ्री है?",
       a1: "हाँ! DailyAI सभी के लिए पूरी तरह से फ्री है। आप बिना किसी छिपे हुए शुल्क के तुरंत हमारे सभी टूल्स का उपयोग शुरू कर सकते हैं।",
       q2: "टूल्स को कौन से AI मॉडल पावर देते हैं?",
@@ -142,7 +142,7 @@ export const translations = {
     hero: {
       tagline: "Ek Website. Unlimited Daily Tools.",
       subtagline: "Resume, Captions, Notes aur bohot kuch. Students aur professionals ke liye ultimate AI toolkit.",
-      cta: "Abhi Daily AI Try Karo",
+      cta: "Abhi Swai Try Karo",
       explore: "Tools Dekho",
     },
     features: {
@@ -163,11 +163,11 @@ export const translations = {
     },
     testimonials: {
       title: "Students aur professionals ka bharosa.",
-      subtitle: "Dekho kaise DailyAI logon ka time bacha raha hai.",
+      subtitle: "Dekho kaise Swai logon ka time bacha raha hai.",
     },
     faq: {
       title: "Sawaal Jawaab (FAQ)",
-      subtitle: "DailyAI ke baare mein sab kuch jaaniye.",
+      subtitle: "Swai ke baare mein sab kuch jaaniye.",
       q1: "Kya DailyAI sach mein free hai?",
       a1: "Haan! DailyAI sabke liye free hai. Aap bina kisi extra charge ke tools use kar sakte hain.",
       q2: "Kaunsa AI model use hota hai?",

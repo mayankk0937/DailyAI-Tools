@@ -65,12 +65,12 @@ export function ToolTemplate({
                 {isGenerating ? (
                   <span className="flex items-center gap-2">
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    AI Routing in Progress...
+                    Swai is thinking...
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />
-                    Generate
+                    Ask Swai
                   </span>
                 )}
               </Button>
@@ -86,7 +86,7 @@ export function ToolTemplate({
             </h3>
             {provider && (
               <span className="text-[10px] uppercase tracking-widest px-2 py-1 bg-white/5 border border-white/10 rounded-full text-gray-400">
-                ⚡ Powered by {provider}
+                ⚡ Powered by Swai
               </span>
             )}
           </div>
@@ -96,7 +96,7 @@ export function ToolTemplate({
               <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
                  <div className="text-center space-y-3">
                    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                   <p className="text-xs text-gray-400 animate-pulse">Switching to backup AI if needed...</p>
+                   <p className="text-xs text-gray-400 animate-pulse">Swai is finding the best answer...</p>
                  </div>
               </div>
             )}
@@ -105,7 +105,7 @@ export function ToolTemplate({
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
                 <Icon className="w-16 h-16 mb-4 text-gray-500" />
-                <p className="text-gray-400">Fill in the details on the left and click Generate to see the magic happen.</p>
+                <p className="text-gray-400">Ask Swai anything on the left and watch the magic happen.</p>
               </div>
             )}
           </div>
