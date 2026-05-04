@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Sparkles, Menu, X, LayoutDashboard, User } from "lucide-react";
+import { Sparkles, Menu, X, LayoutDashboard, User, Home } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LanguageSelector } from "@/components/layout/LanguageSelector";
@@ -26,6 +26,7 @@ export function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
+            <Link href="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Home</Link>
             <Link href="#features" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">{t("nav", "tools")}</Link>
             <Link href="/about" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">About</Link>
             <Link href="/dashboard" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">{t("nav", "dashboard")}</Link>
@@ -71,6 +72,10 @@ export function Navbar() {
                 </Button>
               </div>
               <div className="flex flex-col gap-6 flex-1 mt-4">
+                <Link href="/" onClick={() => setIsOpen(false)} className="text-lg font-medium text-gray-300 hover:text-white flex items-center gap-4 p-2 rounded-xl hover:bg-white/5 transition-colors">
+                  <div className="bg-primary/20 p-2 rounded-lg"><Home className="w-5 h-5 text-primary" /></div>
+                  Home
+                </Link>
                 <Link href="#features" onClick={() => setIsOpen(false)} className="text-lg font-medium text-gray-300 hover:text-white flex items-center gap-4 p-2 rounded-xl hover:bg-white/5 transition-colors">
                   <div className="bg-primary/20 p-2 rounded-lg"><Sparkles className="w-5 h-5 text-primary" /></div>
                   {t("nav", "tools")}
