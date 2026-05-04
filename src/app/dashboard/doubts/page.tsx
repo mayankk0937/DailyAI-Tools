@@ -74,13 +74,8 @@ export default function DoubtSolver() {
     const textQuestion = formData.question.trim();
     const hasImage = !!formData.fileData;
 
-    console.log("Generate clicked");
-    console.log("Typed question:", formData.question);
-    console.log("Trimmed text:", textQuestion);
-    console.log("Image exists:", hasImage);
 
     if (!textQuestion && !hasImage) {
-      console.log("Validation failed: No input provided");
       setError("Please upload an image or type your question.");
       return;
     }
@@ -90,7 +85,6 @@ export default function DoubtSolver() {
     setResult(null);
 
     try {
-      console.log("Sending request to /api/generate...");
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,7 +98,6 @@ export default function DoubtSolver() {
       });
 
       const data = await response.json();
-      console.log("Response received:", data);
 
       if (!response.ok) throw new Error(data.error || "Failed to solve doubt");
 
@@ -142,7 +135,6 @@ export default function DoubtSolver() {
         href: "/dashboard/doubts"
       });
 
-      console.log("Result updated successfully");
     } catch (err: any) {
       console.error("Error in handleGenerate:", err);
       setError(err.message);

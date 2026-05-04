@@ -83,12 +83,13 @@ export default function YouTubeToNotes() {
   const exportPDF = async () => {
     const html2pdf = (await import("html2pdf.js")).default;
     const element = resultRef.current;
+    if (!element) return;
     const opt = {
       margin: 1,
       filename: `DailyAI_Notes_${new Date().getTime()}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: 'jpeg' as const, quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const }
     };
     html2pdf().set(opt).from(element).save();
   };

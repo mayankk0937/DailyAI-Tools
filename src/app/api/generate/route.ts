@@ -309,118 +309,16 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
       default: basePrompt = `Assist with: ${JSON.stringify(data)}`;
     }
 
+
     const finalPrompt = tool === "planner" 
       ? `${basePrompt}\n\nFORMATTING: You MUST return ONLY a valid JSON object. No markdown wrappers, no backticks, no conversational text. Start with { and end with }.`
       : `${basePrompt}\n\n${languageInstruction}\n\nFORMATTING: Use clean Markdown. No AI conversational fluff. Direct output only.`;
 
-    // 5. Failover Generation Strategy
-    const freeFailover = [
-      { 
-        provider: "OpenRouter", 
-        model: "google/gemini-flash-1.5-8b", 
-        call: (p: string) => {
-          const messages: any = [{
-            role: "user",
-            content: [{ type: "text", text: p }]
-          }];
-          if (data.fileData && data.mimeType) {
-            messages[0].content.push({
-              type: "image_url",
-              image_url: { url: `data:${data.mimeType};base64,${data.fileData}` }
-            });
-          }
-          return openrouter.chat.completions.create({ messages, model: "google/gemini-flash-1.5-8b" });
-        }
-      },
-      { 
-        provider: "OpenRouter-Vision", 
-        model: "meta-llama/llama-3.2-11b-vision-instruct:free", 
-        call: (p: string) => {
-          const messages: any = [{
-            role: "user",
-            content: [{ type: "text", text: p }]
-          }];
-          if (data.fileData && data.mimeType) {
-            messages[0].content.push({
-              type: "image_url",
-              image_url: { url: `data:${data.mimeType};base64,${data.fileData}` }
-            });
-          }
-          return openrouter.chat.completions.create({ messages, model: "meta-llama/llama-3.2-11b-vision-instruct:free" });
-        }
-      },
-      { 
-        provider: "Gemini", 
-        model: "gemini-1.5-flash", 
-        call: async (p: string) => {
-          const genAI = getGeminiClient();
-          if (!genAI) throw new Error("GEMINI_API_KEY missing");
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-          if (data.fileData && data.mimeType) {
-            return model.generateContent([p, { inlineData: { data: data.fileData, mimeType: data.mimeType } }]);
-          }
-          return model.generateContent(p);
-        } 
-      },
-      { 
-        provider: "Groq", 
-        model: "llama-3.3-70b-versatile", 
-        call: (p: string) => {
-          return groq.chat.completions.create({ 
-            messages: [{ role: "user", content: p.slice(0, 10000) }], 
-            model: "llama-3.3-70b-versatile" 
-          });
-        }
-      }
-    ];
-
-    const premiumFailover = [
-      { 
-        provider: "OpenAI", 
-        model: "gpt-4o-mini", 
-        call: (p: string) => {
-          const messages: any = [
-            {
-              role: "user",
-              content: [
-                { type: "text", text: p },
-              ],
-            },
-          ];
-
-          if (data.fileData && data.mimeType) {
-            messages[0].content.push({
-              type: "image_url",
-              image_url: { url: `data:${data.mimeType};base64,${data.fileData}` },
-            });
-          }
-
-          return openai.chat.completions.create({ messages, model: "gpt-4o-mini" });
-        }
-      },
-      { 
-        provider: "Gemini Pro", 
-        model: "gemini-1.5-pro", 
-        call: async (p: string) => {
-          const genAI = getGeminiClient();
-          if (!genAI) throw new Error("GEMINI_API_KEY missing");
-          const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-          if (data.fileData && data.mimeType) {
-            return model.generateContent([p, { inlineData: { data: data.fileData, mimeType: data.mimeType } }]);
-          }
-          return model.generateContent(p);
-        }
-      }
-    ];
-
-    const strategy = isPremium ? premiumFailover : freeFailover;
-    let lastError = null;
+    const routerResult = await aiRouter(finalPrompt);
+    
     let resultText = "";
     let usedProvider = "";
 
-    // Using the new centralized AI Router
-    const routerResult = await aiRouter(finalPrompt);
-    
     if (routerResult.success) {
       resultText = routerResult.output || "";
       usedProvider = routerResult.provider || "Unknown";
@@ -428,10 +326,7 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
       throw new Error(routerResult.message);
     }
 
-    // 6. Post-Processing & Database
-    promptCache.set(cacheKey, resultText);
-
-    // 6. Post-Processing & Database - REMOVED (Project is now 100% Public)
+    // 6. Post-Processing & Cache
     promptCache.set(cacheKey, resultText);
 
     if (tool === "planner" && resultText) {
