@@ -3,7 +3,6 @@ import { OpenAI } from "openai";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { YoutubeTranscript } from "youtube-transcript";
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 // Initialize AI Clients
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -29,33 +28,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { tool, data, language = cookieLang || "en" } = body;
 
-    // 1. Auth & Credit Check (10 daily for Free, Unlimited for Pro)
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) { return cookieStore.get(name)?.value; },
-          set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }); },
-          remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: "", ...options }); },
-        },
-      }
-    );
-
-    const { data: { user } } = await supabase.auth.getUser();
-    let isPremium = false;
-
-    if (user) {
-      const { data: sub } = await supabase.from("subscriptions").select("plan_id").eq("user_id", user.id).single();
-      isPremium = sub?.plan_id === "pro" || sub?.plan_id === "team";
-
-      /* 
-      const { data: credits } = await supabase.from("credits").select("balance").eq("user_id", user.id).single();
-      if (!isPremium && (!credits || credits.balance <= 0)) {
-        return NextResponse.json({ error: "Your daily limit has been reached. Please upgrade to Pro for unlimited access." }, { status: 403 });
-      }
-      */
-    }
+    // 1. Auth & Credit Check - REMOVED (Project is now 100% Public)
+    let isPremium = true; // Default to full access for everyone
 
     // 2. Cache Check
     const cacheKey = JSON.stringify({ tool, data, language });
@@ -456,13 +430,8 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
     // 6. Post-Processing & Database
     promptCache.set(cacheKey, resultText);
 
-    if (user) {
-      if (!isPremium) {
-        await supabase.from("credits").update({ balance: credits.balance - 1 }).eq("user_id", user.id);
-      }
-      await supabase.from("tool_usage").insert({ user_id: user.id, tool_name: tool, provider_used: usedProvider });
-      await supabase.from("saved_history").insert({ user_id: user.id, tool_name: tool, content: { text: resultText } });
-    }
+    // 6. Post-Processing & Database - REMOVED (Project is now 100% Public)
+    promptCache.set(cacheKey, resultText);
 
     if (tool === "planner" && resultText) {
       // Strip markdown JSON wrappers if the model ignored the instruction

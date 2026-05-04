@@ -12,6 +12,7 @@ interface ToolTemplateProps {
   isGenerating?: boolean;
   onGenerate?: () => void;
   provider?: string;
+  hideGenerateButton?: boolean;
 }
 
 export function ToolTemplate({
@@ -23,6 +24,7 @@ export function ToolTemplate({
   isGenerating,
   onGenerate,
   provider,
+  hideGenerateButton,
 }: ToolTemplateProps) {
   return (
     <div className="h-full flex flex-col">
@@ -52,26 +54,28 @@ export function ToolTemplate({
             {children}
           </div>
           
-          <div className="pt-6 mt-6 border-t border-white/10">
-            <Button 
-              variant="premium" 
-              className="w-full h-12 text-lg font-medium shadow-xl shadow-primary/20"
-              onClick={onGenerate}
-              disabled={isGenerating}
-            >
-              {isGenerating ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  AI Routing in Progress...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  Generate
-                </span>
-              )}
-            </Button>
-          </div>
+          {!hideGenerateButton && (
+            <div className="pt-6 mt-6 border-t border-white/10">
+              <Button 
+                variant="premium" 
+                className="w-full h-12 text-lg font-medium shadow-xl shadow-primary/20"
+                onClick={onGenerate}
+                disabled={isGenerating}
+              >
+                {isGenerating ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    AI Routing in Progress...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Generate
+                  </span>
+                )}
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Output Column */}

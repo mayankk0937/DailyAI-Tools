@@ -33,11 +33,8 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center gap-4">
             <LanguageSelector />
-            <Link href="/login">
-              <Button variant="ghost">{t("nav", "signIn")}</Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="premium">Try Now</Button>
+            <Link href="/dashboard">
+              <Button variant="premium">Get Started Instantly</Button>
             </Link>
           </div>
 
@@ -88,11 +85,8 @@ export function Navbar() {
                 </Link>
               </div>
               <div className="mt-auto space-y-4 pt-8 border-t border-white/10">
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="w-full justify-center py-6 text-base bg-transparent border-white/20 hover:bg-white/5 rounded-xl">{t("nav", "signIn")}</Button>
-                </Link>
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="premium" className="w-full justify-center py-6 text-base rounded-xl mt-3">Try Now</Button>
+                <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                  <Button variant="premium" className="w-full justify-center py-6 text-base rounded-xl mt-3">Start Using Now</Button>
                 </Link>
               </div>
             </motion.div>

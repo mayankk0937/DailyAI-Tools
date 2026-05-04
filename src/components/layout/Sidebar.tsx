@@ -118,24 +118,6 @@ export function Sidebar() {
           </div>
         </div>
 
-        <div>
-          <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wider px-2">Account</p>
-          <div className="space-y-1">
-            <Link href="/dashboard/profile" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5">
-              <User className="w-4 h-4" /> Profile
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 border-t border-white/5">
-
-        <Link href="/" className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors mb-1">
-          <Home className="w-4 h-4" /> Back to Website
-        </Link>
-        <button className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium text-gray-400 hover:text-red-400 hover:bg-red-400/10 transition-colors">
-          <LogOut className="w-4 h-4" /> Log out
-        </button>
       </div>
     </aside>
     </>

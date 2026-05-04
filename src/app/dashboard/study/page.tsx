@@ -11,13 +11,31 @@ const Mermaid = ({ chart }: { chart: string }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Dynamically load mermaid from CDN
-    const script = document.createElement("script");
-    script.src = "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js";
-    script.async = true;
-    script.onload = () => {
-      (window as any).mermaid.initialize({ 
-        startOnLoad: true, 
+    if (!chart) return;
+
+    const renderChart = async () => {
+      // Check if mermaid is already loaded
+      if (!(window as any).mermaid) {
+        // Check if script is already in document
+        let script = document.querySelector('script[src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"]') as HTMLScriptElement;
+        
+        if (!script) {
+          script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js";
+          script.async = true;
+          document.body.appendChild(script);
+        }
+
+        await new Promise((resolve) => {
+          if ((window as any).mermaid) resolve(true);
+          else script.addEventListener("load", () => resolve(true));
+        });
+      }
+
+      const mermaid = (window as any).mermaid;
+      
+      mermaid.initialize({ 
+        startOnLoad: false, 
         theme: 'dark', 
         securityLevel: 'loose',
         themeVariables: {
@@ -28,18 +46,29 @@ const Mermaid = ({ chart }: { chart: string }) => {
           pie5: "#10b981",
         }
       });
+
       if (ref.current) {
-        (window as any).mermaid.contentLoaded();
-        // Force a re-render for the specific element
-        (window as any).mermaid.init(undefined, ref.current);
+        // Clean up previous SVG to prevent overlapping renders
+        ref.current.innerHTML = chart;
+        try {
+          await mermaid.run({
+            nodes: [ref.current]
+          });
+        } catch (e) {
+          console.error("Mermaid render error:", e);
+        }
       }
     };
-    document.body.appendChild(script);
-    return () => { document.body.removeChild(script); };
+
+    renderChart();
   }, [chart]);
 
   return (
-    <div className="mermaid p-6 rounded-2xl my-6 flex justify-center border" style={{ backgroundColor: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }} ref={ref}>
+    <div 
+      className="mermaid p-6 rounded-2xl my-6 flex justify-center border transition-all duration-500" 
+      style={{ backgroundColor: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }} 
+      ref={ref}
+    >
       {chart}
     </div>
   );

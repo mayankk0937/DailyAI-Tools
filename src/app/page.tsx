@@ -56,9 +56,9 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/login">
+              <Link href="/dashboard">
                 <Button variant="premium" size="lg" className="w-full sm:w-auto text-lg group px-8">
-                  {t("hero", "cta")}
+                  Get Started Instantly
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -117,7 +117,7 @@ export default function LandingPage() {
           </div>
           
           <div className="mt-12 text-center">
-             <Link href="/login">
+             <Link href="/dashboard">
                <Button variant="outline">View All 14 Tools</Button>
              </Link>
           </div>
@@ -200,9 +200,9 @@ export default function LandingPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-blue-500/10 pointer-events-none" />
             <h2 className="text-4xl md:text-6xl font-black mb-6 relative z-10">Ready to boost your<br/><span className="text-gradient">productivity?</span></h2>
             <p className="text-gray-400 mb-10 max-w-xl mx-auto relative z-10">Join thousands of students and professionals who are already using DailyAI to work smarter, not harder.</p>
-            <Link href="/login" className="relative z-10 inline-block">
+            <Link href="/dashboard" className="relative z-10 inline-block">
               <Button variant="premium" size="lg" className="px-10 py-8 text-xl rounded-full">
-                {t("hero", "cta")}
+                Start Using DailyAI For Free
               </Button>
             </Link>
           </motion.div>

@@ -29,7 +29,7 @@ export default function DashboardHome() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2 text-white">Welcome back, Creator! 👋</h1>
+          <h1 className="text-3xl font-bold mb-2 text-white">Welcome to DailyAI! 👋</h1>
           <p className="text-gray-400">What would you like to build today?</p>
         </div>
       </div>

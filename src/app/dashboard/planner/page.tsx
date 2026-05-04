@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ToolTemplate } from "@/components/ui/ToolTemplate";
 import { Calendar, AlertCircle, Clock, Activity, Zap, Brain, Dumbbell, Coffee, Target, Download, Play, CheckCircle, ArrowRight, BarChart2, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,16 +49,23 @@ export default function DailyPlanner() {
 
   // Load stats from local storage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("dailyai_planner_stats");
-    if (saved) {
-      setStats(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem("dailyai_planner_stats");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          setStats(prev => ({ ...prev, ...parsed }));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse planner stats:", e);
     }
   }, []);
 
-  const saveStats = (newStats: any) => {
+  const saveStats = useCallback((newStats: any) => {
     setStats(newStats);
     localStorage.setItem("dailyai_planner_stats", JSON.stringify(newStats));
-  };
+  }, []);
 
   const handleGenerate = async () => {
     if (!formData.tasks || !formData.goals) {
@@ -160,12 +167,16 @@ export default function DailyPlanner() {
       interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
     } else if (timeLeft === 0 && isTimerRunning) {
       setIsTimerRunning(false);
-      // Add to stats
-      saveStats({ ...stats, focusMinutes: stats.focusMinutes + 25 });
+      // Add to stats using functional update to avoid effect dependency on 'stats'
+      setStats(prev => {
+        const updated = { ...prev, focusMinutes: prev.focusMinutes + 25 };
+        localStorage.setItem("dailyai_planner_stats", JSON.stringify(updated));
+        return updated;
+      });
       alert("Focus Session Complete! You earned +25 Focus Minutes.");
     }
     return () => clearInterval(interval);
-  }, [isTimerRunning, timeLeft, stats]);
+  }, [isTimerRunning, timeLeft]);
 
   const toggleTimer = () => setIsTimerRunning(!isTimerRunning);
   
@@ -178,9 +189,16 @@ export default function DailyPlanner() {
 
   const markTaskComplete = (taskId: string) => {
     if (!result) return;
-    const newSchedule = result.schedule.filter(t => t.id !== taskId);
-    setResult({ ...result, schedule: newSchedule });
-    saveStats({ ...stats, tasksCompleted: stats.tasksCompleted + 1, streaks: stats.streaks === 0 ? 1 : stats.streaks });
+    setResult(prev => prev ? {
+      ...prev,
+      schedule: prev.schedule.filter(t => (t.id || t.task) !== taskId)
+    } : null);
+    
+    saveStats({ 
+      ...stats, 
+      tasksCompleted: stats.tasksCompleted + 1, 
+      streaks: stats.streaks === 0 ? 1 : stats.streaks 
+    });
   };
 
   const autoReschedule = () => {
@@ -326,10 +344,19 @@ export default function DailyPlanner() {
                     </div>
 
                     {/* Framer Motion Reorder List */}
-                    <Reorder.Group axis="y" values={result.schedule} onReorder={(newOrder) => setResult({...result, schedule: newOrder})} className="space-y-4">
+                    <Reorder.Group 
+                      axis="y" 
+                      values={result.schedule} 
+                      onReorder={(newOrder) => setResult(prev => prev ? {...prev, schedule: newOrder} : null)} 
+                      className="space-y-4"
+                    >
                       <AnimatePresence>
                         {result.schedule.map((item, index) => (
-                          <Reorder.Item key={item.id || item.task} value={item} className="flex flex-col sm:flex-row gap-4 group cursor-grab active:cursor-grabbing">
+                          <Reorder.Item 
+                            key={item.id ? `task-${item.id}` : `task-idx-${index}-${item.task}`} 
+                            value={item} 
+                            className="flex flex-col sm:flex-row gap-4 group cursor-grab active:cursor-grabbing"
+                          >
                             
                             {/* Time Block */}
                             <div className="w-full sm:w-40 shrink-0 sm:text-right pt-4">

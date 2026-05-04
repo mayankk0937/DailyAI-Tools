@@ -200,7 +200,7 @@ export default function InvoiceGenerator() {
                 <th className="text-right py-4 font-black text-[10px] uppercase tracking-widest w-32">Amount</th>
               </tr>
             </thead>
-            <tbody style={{ divideY: `1px solid ${borderColor}` }}>
+            <tbody>
               {formData.items.map((item) => (
                 <tr key={item.id} style={{ borderBottom: `1px solid ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"}` }}>
                   <td className="py-6 text-sm font-medium">{item.description || "Service/Product description..."}</td>
