@@ -199,10 +199,10 @@ export default function LandingPage() {
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-blue-500/10 pointer-events-none" />
             <h2 className="text-4xl md:text-6xl font-black mb-6 relative z-10">Ready to boost your<br/><span className="text-gradient">productivity?</span></h2>
-            <p className="text-gray-400 mb-10 max-w-xl mx-auto relative z-10">Join thousands of students and professionals who are already using Swai to work smarter, not harder.</p>
+            <p className="text-gray-400 mb-10 max-w-xl mx-auto relative z-10">Join thousands of students and professionals who are already using DailyAI Tools to work smarter, not harder.</p>
             <Link href="/dashboard" className="relative z-10 inline-block">
               <Button variant="premium" size="lg" className="px-10 py-8 text-xl rounded-full">
-                Start Using Swai For Free
+                Start Using DailyAI Tools For Free
               </Button>
             </Link>
           </motion.div>

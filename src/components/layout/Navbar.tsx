@@ -21,7 +21,7 @@ export function Navbar() {
               <Sparkles className="w-5 h-5 text-primary" />
             </div>
             <span className="font-bold text-lg md:text-xl tracking-tight text-foreground whitespace-nowrap">
-              Swai
+              DailyAI Tools
             </span>
           </Link>
 
