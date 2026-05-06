@@ -141,13 +141,13 @@ export default function InvoiceGenerator() {
     return (
       <div 
         ref={invoiceRef}
-        className="p-10 transition-colors duration-300"
         style={{ 
-          minHeight: "800px",
+          minHeight: "auto",
           fontFamily: "'Inter', sans-serif",
           backgroundColor: bgColor,
           color: textColor,
         }}
+        className="p-6 md:p-10 transition-colors duration-300 lg:min-h-[800px]"
       >
         {/* Header */}
         <div className="flex justify-between items-start mb-12">
@@ -316,7 +316,7 @@ export default function InvoiceGenerator() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="overflow-hidden rounded-xl border border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+              className="rounded-xl border border-white/5 shadow-[0_0_50px_rgba(0,0,0,0.5)] lg:overflow-hidden"
             >
               <PreviewContent />
             </motion.div>

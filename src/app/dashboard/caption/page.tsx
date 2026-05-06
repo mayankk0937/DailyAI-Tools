@@ -101,7 +101,7 @@ export default function CaptionGenerator() {
       hideGenerateButton={true}
       result={
         sections.length > 0 ? (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-auto lg:h-full">
             {/* Tabs Header */}
             <div className="flex overflow-x-auto gap-2 pb-4 mb-4 border-b border-white/5 custom-scrollbar">
               {tabNames.map((name, i) => (
@@ -120,7 +120,7 @@ export default function CaptionGenerator() {
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 lg:overflow-y-auto">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}

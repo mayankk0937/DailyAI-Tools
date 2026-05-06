@@ -19,16 +19,7 @@ export default function YouTubeToNotes() {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ url: "", context: "", subject: "auto", language: "English" });
-  const [step, setStep] = useState(0);
   const resultRef = useRef<HTMLDivElement>(null);
-
-  const steps = [
-    "Fetching Transcript & Timestamps",
-    "Smart Chunking Content",
-    "Stage 1: Multi-Chunk Analysis",
-    "Stage 2: Integrating Insights",
-    "Finalizing Premium Study Pack"
-  ];
 
   const tabNames = [
     { name: "Smart Notes", icon: BookOpen },
@@ -41,6 +32,8 @@ export default function YouTubeToNotes() {
     { name: "PPT Outline", icon: Presentation },
   ];
 
+  const [statusMessage, setStatusMessage] = useState("Initializing...");
+
   const handleGenerate = async () => {
     if (!formData.url) {
       setError("Please paste a YouTube video link.");
@@ -50,12 +43,7 @@ export default function YouTubeToNotes() {
     setIsGenerating(true);
     setError(null);
     setSections([]);
-    setStep(0);
-
-    // Simulate progress for UI
-    const progressInterval = setInterval(() => {
-      setStep(s => (s < steps.length - 1 ? s + 1 : s));
-    }, 5000);
+    setStatusMessage("Connecting to DailyAI...");
 
     try {
       const response = await fetch("/api/youtube/upgrade", {
@@ -64,18 +52,50 @@ export default function YouTubeToNotes() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Failed to generate notes");
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || "Failed to generate notes");
+      }
 
-      const parsedSections = data.result.split("---SECTION_BREAK---").map((s: string) => s.trim()).filter(Boolean);
-      setSections(parsedSections);
-      setTimestamps(data.timestamps || []);
-      setActiveTab(0);
-      setStep(4);
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("Failed to connect to the stream");
+      
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || "";
+        
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            try {
+              const data = JSON.parse(line.substring(6));
+              
+              if (data.type === "progress") {
+                setStatusMessage(data.message);
+              } else if (data.type === "success") {
+                const parsedSections = data.result.split("---SECTION_BREAK---").map((s: string) => s.trim()).filter(Boolean);
+                setSections(parsedSections);
+                setTimestamps(data.timestamps || []);
+                setActiveTab(0);
+                setIsGenerating(false);
+                return;
+              } else if (data.type === "error") {
+                throw new Error(data.error);
+              }
+            } catch (e) {
+              // ignore parse errors for partial chunks
+            }
+          }
+        }
+      }
     } catch (err: any) {
       setError(err.message);
-    } finally {
-      clearInterval(progressInterval);
       setIsGenerating(false);
     }
   };
@@ -113,7 +133,7 @@ export default function YouTubeToNotes() {
       hideGenerateButton={true}
       result={
         sections.length > 0 ? (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-auto lg:h-full">
             {/* Tabs Header */}
             <div className="flex overflow-x-auto gap-2 pb-4 mb-4 border-b border-white/5 custom-scrollbar">
               {tabNames.map((tab, i) => (
@@ -132,9 +152,9 @@ export default function YouTubeToNotes() {
               ))}
             </div>
 
-            <div className="flex gap-6 flex-1 overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-6 flex-1 lg:overflow-hidden">
               {/* Main Content Area */}
-              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar" ref={resultRef}>
+              <div className="flex-1 lg:overflow-y-auto lg:pr-2 custom-scrollbar" ref={resultRef}>
                 <div className="prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown>{sections[activeTab] || "Generating content..."}</ReactMarkdown>
                 </div>
@@ -220,13 +240,8 @@ export default function YouTubeToNotes() {
             </div>
             
             <h3 className="text-xl font-bold mb-4">Processing Elite Notes</h3>
-            <div className="space-y-4 w-full max-w-xs">
-              {steps.map((s, i) => (
-                <div key={i} className={`flex items-center gap-3 text-sm transition-all duration-500 ${i === step ? "text-white opacity-100 scale-105" : i < step ? "text-primary opacity-60" : "text-gray-600 opacity-40"}`}>
-                  {i < step ? <CheckCircle2 className="w-4 h-4" /> : <div className={`w-4 h-4 rounded-full border ${i === step ? "border-primary animate-ping" : "border-gray-700"}`} />}
-                  {s}
-                </div>
-              ))}
+            <div className="bg-primary/5 border border-primary/10 rounded-xl px-6 py-4 max-w-sm w-full mx-auto animate-pulse">
+               <p className="text-sm font-medium text-primary">{statusMessage}</p>
             </div>
           </div>
         ) : null

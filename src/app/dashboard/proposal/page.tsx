@@ -88,7 +88,7 @@ export default function ProposalWriter() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div 
               ref={proposalRef}
-              className="p-10 rounded-xl shadow-2xl min-h-[600px] text-left"
+              className="p-6 md:p-10 rounded-xl shadow-2xl text-left h-auto lg:min-h-[600px]"
               style={{ 
                 backgroundColor: "#ffffff", 
                 color: "#1e293b",

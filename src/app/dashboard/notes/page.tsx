@@ -78,7 +78,7 @@ export default function NotesGenerator() {
       provider={provider || undefined}
       result={
         sections.length > 0 ? (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-auto lg:h-full">
             {/* Tabs Header */}
             <div className="flex overflow-x-auto gap-2 pb-4 mb-4 border-b border-white/5 custom-scrollbar">
               {tabNames.map((name, i) => (
@@ -97,7 +97,7 @@ export default function NotesGenerator() {
             </div>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 lg:overflow-y-auto">
               <div className="prose prose-invert prose-sm max-w-none">
                 <ReactMarkdown>{sections[activeTab] || "Generating content..."}</ReactMarkdown>
               </div>

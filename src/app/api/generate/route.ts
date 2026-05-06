@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     const { tool, data, language = cookieLang || "en" } = body;
 
     // 1. Auth & Credit Check - REMOVED (Project is now 100% Public)
-    let isPremium = true; // Default to full access for everyone
+    const isPremium = true; // Default to full access for everyone
 
     // 2. Cache Check
     const cacheKey = JSON.stringify({ tool, data, language });
@@ -182,6 +182,7 @@ Use Emojis and clean Markdown. Direct roadmap only.`;
         - Use Markdown (Tables, Bold, H2/H3).
         - No conversational filler.
         - Use "---SECTION_BREAK---" to separate each of the 7 sections.`;
+        break;
       case "doubts":
         basePrompt = `You are an Elite AI Tutor with advanced Vision and Reasoning capabilities. 
         Analyze the provided image or text question with 100% accuracy.

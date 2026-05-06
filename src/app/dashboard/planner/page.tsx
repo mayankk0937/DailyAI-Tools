@@ -307,7 +307,7 @@ export default function DailyPlanner() {
             <div className="space-y-6 animate-in fade-in duration-500 text-left w-full">
               <div 
                 ref={plannerRef}
-                className="p-8 rounded-xl relative overflow-hidden"
+                className="p-4 md:p-8 rounded-xl relative overflow-hidden h-auto"
                 style={{ backgroundColor: "#ffffff", color: "#0f172a", fontFamily: "'Inter', sans-serif", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
               >
                 {/* Header Section */}
